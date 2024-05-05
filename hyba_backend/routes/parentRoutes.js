@@ -17,6 +17,9 @@ router.get('/:id', parentController.getParentById);
 
 router.post('/:id/:idbaby/rendezvous', parentController.addRendezVous);
 
+
+
+
 module.exports = router;
 
 

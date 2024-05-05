@@ -42,7 +42,11 @@ const babysitterSchema = new mongoose.Schema({
       type: Date,
       
     },
-    heure: {
+    heure_debut: {
+      type: String, // Ou vous pouvez utiliser le type Date si vous préférez
+      
+    },
+    heure_fin: {
       type: String, // Ou vous pouvez utiliser le type Date si vous préférez
       
     }

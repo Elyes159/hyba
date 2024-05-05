@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
 
 exports.addRendezVous = async (req, res) => {
 
-  const { date, nomParent , heure } = req.body;
+  const { date, nomParent , heure_debut,  heure_fin} = req.body;
 
   try {
     const parent = await Parent.findById(req.params.id);
@@ -80,7 +80,8 @@ exports.addRendezVous = async (req, res) => {
     const rendezVous = {
       nomParent,
       date,
-      heure
+      heure_debut,
+      heure_fin,
     };
 
     babysitter.rendezVous.push(rendezVous);
@@ -96,3 +97,5 @@ exports.addRendezVous = async (req, res) => {
     }
   }
 };
+
+

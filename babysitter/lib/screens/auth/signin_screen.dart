@@ -191,14 +191,14 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   );
                                   if (widget.type == 'baby-sitter') {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (e) => const ProfileScreen(
-                                    //       type: 'babysitter',
-                                    //     ),
-                                    //   ),
-                                    // );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (e) => const ProfileScreen(
+                                          type: 'babysitter',
+                                        ),
+                                      ),
+                                    );
                                   } else {
                                     Navigator.push(
                                       context,
@@ -223,7 +223,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               );
                             }
                           },
-                          child: const Text('Sign up'),
+                          child: const Text('Sign in'),
                         ),
                       ),
                       const SizedBox(

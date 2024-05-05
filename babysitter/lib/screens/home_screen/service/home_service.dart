@@ -17,16 +17,24 @@ class HomeService {
       List result = json.decode(response.body);
       if (response.statusCode == 200) {
         List<BabysitterModel> babysitters = [];
-        for (var babysitter in result) {
+        for (var babysitterData in result) {
+          List<RendezVous> rendezVousList = [];
+          // Suppose que babysitterData['rendezVous'] est une liste d'objets rendez-vous
+          for (var rendezVousData in babysitterData['rendezVous']) {
+            RendezVous rendezVous = RendezVous.fromJson(rendezVousData);
+            rendezVousList.add(rendezVous);
+          }
+
           BabysitterModel user = BabysitterModel(
-            id: babysitter['_id'],
-            nom: babysitter['nom'],
-            prenom: babysitter['prenom'],
-            email: babysitter['email'],
-            phone: babysitter['phone'],
-            password: babysitter['password'],
-            description: babysitter['description'],
-            accepte: babysitter['accepte'],
+            id: babysitterData['_id'] ?? '',
+            nom: babysitterData['nom'] ?? '',
+            prenom: babysitterData['prenom'] ?? '',
+            email: babysitterData['email'] ?? '',
+            password: babysitterData['password'] ?? '',
+            phone: babysitterData['phone'] ?? '',
+            description: babysitterData['description'] ?? '',
+            accepte: babysitterData['accepte'] ?? '',
+            rendezVous: rendezVousList,
           );
           babysitters.add(user);
         }
@@ -37,8 +45,7 @@ class HomeService {
       }
     } catch (e) {
       print(e.toString());
+      return []; // Ajout de la clause return pour gérer les erreurs et renvoyer une liste vide
     }
-
-    return [];
   }
 }

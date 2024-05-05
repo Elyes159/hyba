@@ -17,4 +17,6 @@ router.get('/demandes/acceptees', babysitterController.getDemandesAcceptees);
 
 router.get('/demandes/refusees', babysitterController.getDemandesRefusees);
 
+router.get('/rendezVous/:id',babysitterController.getRendezVousByBabysitterId)
+
 module.exports = router;

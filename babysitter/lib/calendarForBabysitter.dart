@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart'; // Pour les formats de date
@@ -16,6 +17,7 @@ class CalendrierRendezVousPage extends StatefulWidget {
 }
 
 Map<String, dynamic>? parent = GetStorage().read('parent');
+Map<String, dynamic>? baby_sitter = GetStorage().read('babysitter');
 
 class _CalendrierRendezVousPageState extends State<CalendrierRendezVousPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -23,19 +25,25 @@ class _CalendrierRendezVousPageState extends State<CalendrierRendezVousPage> {
   DateTime _selectedDay =
       DateTime.now(); // Initialise _selectedDay à la date actuelle
 
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  TimeOfDay _selectedStartTime = TimeOfDay.now();
+  TimeOfDay _selectedEndTime = TimeOfDay.now();
 
-  void _selectTime(BuildContext context) async {
+  void _selectTime(BuildContext context, bool isStartTime) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime,
+      initialTime: isStartTime ? _selectedStartTime : _selectedEndTime,
     );
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null) {
       setState(() {
-        _selectedTime = picked;
+        if (isStartTime) {
+          _selectedStartTime = picked;
+        } else {
+          _selectedEndTime = picked;
+        }
       });
     }
   }
+
   void _sendRendezVous() async {
     try {
       print(widget.babysitterName);
@@ -50,18 +58,39 @@ class _CalendrierRendezVousPageState extends State<CalendrierRendezVousPage> {
         },
         body: jsonEncode(<String, dynamic>{
           'date': _selectedDay.toIso8601String(), // Envoyer la date
-          'heure':
-              '${_selectedTime.hour}:${_selectedTime.minute}', // Envoyer l'heure au format HH:mm
+          'heure_debut':
+              '${_selectedStartTime.hour}:${_selectedStartTime.minute}', // Envoyer l'heure de début au format HH:mm
+          'heure_fin':
+              '${_selectedEndTime.hour}:${_selectedEndTime.minute}', // Envoyer l'heure de fin au format HH:mm
           'nomParent': parent!['nom'],
         }),
       );
 
       if (response.statusCode == 201) {
-        print("mriiigl");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Rendez-vous envoyé avec succès!'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Une erreur s\'est produite lors de l\'envoi du rendez-vous.'),
+            backgroundColor: Colors.red,
+          ),
+        );
         print("${response.body}");
       }
     } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Une erreur s\'est produite lors de l\'envoi du rendez-vous.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       print(error);
     }
   }
@@ -101,9 +130,18 @@ class _CalendrierRendezVousPageState extends State<CalendrierRendezVousPage> {
             ),
             SizedBox(height: 20),
             Center(
-              child: TextButton(
-                onPressed: () => _selectTime(context),
-                child: Text('Choisir l\'heure du rendez-vous'),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _selectTime(context, true),
+                    child: Text('Début: ${_selectedStartTime.format(context)}'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _selectTime(context, false),
+                    child: Text('Fin: ${_selectedEndTime.format(context)}'),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20),
@@ -111,6 +149,27 @@ class _CalendrierRendezVousPageState extends State<CalendrierRendezVousPage> {
               child: ElevatedButton(
                 onPressed: () => _sendRendezVous(),
                 child: Text('Envoyer le rendez-vous'),
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: [
+                  DataColumn(label: Text('Nom Parent')),
+                  DataColumn(label: Text('Date')),
+                  DataColumn(label: Text('Heure de début')),
+                  DataColumn(label: Text('Heure de fin')),
+                ],
+                rows: baby_sitter!['rendezVous']
+                    .map<DataRow>((rendezVousItem) => DataRow(
+                          cells: [
+                            DataCell(Text(rendezVousItem['nomParent'])),
+                            DataCell(Text(rendezVousItem['date'])),
+                            DataCell(Text(rendezVousItem['heure_debut'])),
+                            DataCell(Text(rendezVousItem['heure_fin'])),
+                          ],
+                        ))
+                    .toList(),
               ),
             ),
           ],

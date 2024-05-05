@@ -70,3 +70,21 @@ exports.getDemandesRefusees = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getRendezVousByBabysitterId = async (req, res) => {
+  try {
+    const babysitter = await Babysitter.findById(req.params.id);
+    if (!babysitter) {
+      return res.status(404).json({ message: 'Babysitter not found' });
+    }
+    
+    const rendezVous = babysitter.rendezVous;
+    res.status(200).json(rendezVous);
+  } catch (error) {
+    console.error(error);
+    if (error.name === 'CastError') {
+      res.status(400).json({ message: 'Invalid ID format' });
+    } else {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+};

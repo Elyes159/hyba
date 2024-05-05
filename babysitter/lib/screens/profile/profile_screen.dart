@@ -1,4 +1,5 @@
 import 'package:babysitter/screens/auth/signin_screen.dart';
+import 'package:babysitter/screens/profile/rendezVousBabySitter.dart';
 import 'package:babysitter/screens/profile/update_profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,13 +38,13 @@ class ProfileScreen extends StatelessWidget {
                   ),
             user == null
                 ? SizedBox()
-                :  Text(
-              "${user['email'] ?? ''}", // Remplacez par l'adresse e-mail réelle
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
+                : Text(
+                    "${user['email'] ?? ''}", // Remplacez par l'adresse e-mail réelle
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
             const SizedBox(height: 20),
             ProfileMenu(
               text: "My Account",
@@ -52,7 +53,20 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (e) =>  UptadeProfileScreen(
+                    builder: (e) => UptadeProfileScreen(),
+                  ),
+                );
+              },
+            ),
+            ProfileMenu(
+              text: "Rendez Vous",
+              icon: CupertinoIcons.bell,
+              press: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (e) => RendezVousBabySitter(
+                      type: 'babysitter',
                     ),
                   ),
                 );
